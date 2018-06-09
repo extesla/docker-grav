@@ -1,0 +1,20 @@
+version: '3.2'
+
+services:
+
+  ### TODO: We need a solution for two-way updates to the volume
+  ###   OR: We need a solution for sourcing the volume from a local directory (local-persist?)
+
+  #: <summary>
+  #: The "grav" service is the running instance of the Grav blog.
+  #: </summary>
+  grav:
+    image: extesla/docker-grav:latest
+    container_name: grav
+    ports:
+      - 7000:80
+    volumes:
+      - ./user:${GRAV_DIR:-/srv/www/grav}/user
+    environment:
+      - WWW_DATA_UID=${GRAV_WWW_DATA_UID}
+      - WWW_DATA_GID=${GRAV_WWW_DATA_GID}
