@@ -1,4 +1,5 @@
 .git/
 .history/
+.vagrant/
 temp/
 .env
