@@ -1,0 +1,5 @@
+sync:
+  source: "/shared"
+  target: "localhost:/vagrant"
+  settings:
+    interval: 2

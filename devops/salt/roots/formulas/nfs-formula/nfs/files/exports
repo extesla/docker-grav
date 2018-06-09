@@ -1,0 +1,5 @@
+# nfs_exports is the context passed from server.sls to this file. 
+
+{% for dir, opts in nfs_exports.items() -%}
+{{ dir }} {{ opts }}
+{% endfor -%}

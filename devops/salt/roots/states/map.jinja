@@ -1,0 +1,6 @@
+{% set config = {
+    'user':    salt['pillar.get']('environment:user', 'ubuntu'),
+    'group':   salt['pillar.get']('environment:group', 'ubuntu'),
+    'env':     salt['pillar.get']('environment:env', 'unknown'),
+    'version': salt['pillar.get']('environment:version', 'master'),
+} %}

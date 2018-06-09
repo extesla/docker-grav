@@ -1,0 +1,26 @@
+file_client: local
+
+file_roots:
+  base:
+    - /srv/salt/states
+    - /srv/salt/formulas/composer-formula
+    - /srv/salt/formulas/docker-formula
+    - /srv/salt/formulas/nfs-formula
+    - /srv/salt/formulas/samba-formula
+
+pillar_roots:
+  base:
+    - /srv/salt/pillar
+
+# fileserver_backend:
+#   Instruct Salt Stack to serve Salt State files from the roots directories
+#   (defined above in "file_roots") and, potentially, remotely via git.
+#
+fileserver_backend:
+  - roots
+
+# top_file_merging_strategy: same
+# top_file_merging_strategy: merge_all
+# env_order:
+#   - base
+#   - dev
