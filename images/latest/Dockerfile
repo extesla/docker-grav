@@ -27,7 +27,7 @@ MAINTAINER Sean Quinn "sean.quinn@extesla.com"
 #: TODO: PHP Zip extension is not installed
 
 ENV GRAV_VERSION=latest
-ENV NGINX_VERSION=1.13.12
+ENV NGINX_VERSION=1.15.6
 ENV NGINX_GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8
 ENV WWW_DIR=/srv/www
 ENV ENABLE_XDEBUG="false"
@@ -60,6 +60,7 @@ RUN apk add --no-cache --virtual .build-deps \
     gd-dev \
     geoip-dev \
     gnupg \
+    imagemagick-dev \
     libc-dev \
     libxslt-dev \
     libzip-dev \
@@ -82,17 +83,21 @@ RUN apk add --no-cache --virtual .build-deps \
 #: Install Extensions
 #: ==========================================================================
 
-#: MongoDB Client
-RUN pecl install mongodb
-COPY config/etc/php/mods-available/mongodb.ini /etc/php/mods-available/mongodb.ini
-RUN ln -s /etc/php/mods-available/mongodb.ini /etc/php/conf.d/20-mongodb.ini
+#: Install GD
+COPY config/etc/php/mods-available/gd.ini /etc/php/mods-available/gd.ini
+RUN ln -s /etc/php/mods-available/gd.ini /etc/php/conf.d/20-gd.ini
+
+#: Install Imagick
+RUN pecl install imagick
+COPY config/etc/php/mods-available/imagick.ini /etc/php/mods-available/imagick.ini
+RUN ln -s /etc/php/mods-available/imagick.ini /etc/php/conf.d/20-imagick.ini
 
 #: Install XDebug
 RUN pecl install xdebug
 COPY config/etc/php/mods-available/xdebug.ini /etc/php/mods-available/xdebug.ini
 RUN ln -s /etc/php/mods-available/xdebug.ini /etc/php/conf.d/20-xdebug.ini
 
-#: MongoDB Client
+#: Install Zip
 RUN pecl install zip
 COPY config/etc/php/mods-available/zip.ini /etc/php/mods-available/zip.ini
 RUN ln -s /etc/php/mods-available/zip.ini /etc/php/conf.d/10-zip.ini
