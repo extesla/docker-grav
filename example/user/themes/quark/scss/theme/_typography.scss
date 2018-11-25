@@ -1,3 +1,26 @@
+html {
+  @include fluid-type($size-xs, $size-xl, $min-responsive-font-size, $html-font-size);
+}
+
+// Header Overrides
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 2rem;
+  font-family: $title-font-family;
+  color: darken($body-font-color, 10%);
+}
+
+h1, .h1 {
+  font-size: 3rem;
+}
+
+h2, .h2 {
+  font-size: 1.8rem;
+}
+
+h6, .h6 {
+  font-weight: 400;
+}
+
 .title-center {
   h1, h2 {
     text-align: center;
@@ -7,9 +30,16 @@
 .title-h1h2 {
   h1  {
     font-weight: 100;
+    margin-bottom: 0;
+    line-height: 1.1;
+
     strong, bold {
-    font-weight: 400;
+      font-weight: 400;
+    }
   }
+  h1 + h2 {
+    line-height: 1.1;
+    margin-top: 0;
   }
 
 }
@@ -17,7 +47,6 @@
 // Typography Hints
 .title-h1h2, .title-center {
   h1 + h2 {
-    margin-top: -35px;
     margin-bottom: 50px;
     font-weight: 700;
   }
@@ -25,6 +54,7 @@
 
 a:focus {
   outline: none !important;
+  box-shadow: none !important;
 }
 
 img {
@@ -33,26 +63,20 @@ img {
 
 
 // Codeblocks
-pre:not(.phpdebugbar-widgets-code-block) {
-  code {
-    background: #f8f8f8;
-    display: block;
-    padding: 1rem !important;
-    line-height: 1.5;
-    color: inherit;
-    border-radius: 2px;
-    overflow-x: auto;
-  }
-}
-
-pre.xdebug-var-dump {
-  background: #f8f8f8;
+pre code, pre.xdebug-var-dump{
+  background: #fafafa;
   display: block;
   padding: 1rem !important;
   line-height: 1.5;
   color: inherit;
   border-radius: 2px;
   overflow-x: auto;
+}
+
+pre {
+  code:not(.hljs) {
+    background: #f8f8f8;
+  }
 }
 
 // Icon Tweaks
@@ -105,8 +129,27 @@ strong {
   margin-bottom: 1rem;
 
   .icon {
-    font-size: 120%;
+    font-size: 1rem;
   }
+}
+
+// Lists
+ul,
+ol {
+  margin-left: $unit-8;
+
+  ul,
+  ol {
+    margin-left: $unit-8;
+  }
+}
+
+ul {
+  list-style: disc outside;
+}
+
+ol {
+  list-style: decimal outside;
 }
 
 // Notices

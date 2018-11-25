@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import Dropzone from 'dropzone';
+import EXIF from 'exif-js';
 import request from '../../utils/request';
 import { config, translations } from 'grav-config';
 
@@ -69,6 +70,8 @@ const DropzoneMediaConfig = {
           <a class="dz-view" title="${translations.PLUGIN_ADMIN.VIEW}" href="#" target="_blank" data-dz-view>${translations.PLUGIN_ADMIN.VIEW}</a>
         </div>`.trim()
 };
+
+global.EXIF = EXIF;
 
 const ACCEPT_FUNC = function(file, done, settings) {
     const resolution = settings.resolution;
@@ -161,10 +164,15 @@ export default class FilesField {
         });
     }
 
+    getURI() {
+        return this.container.data('mediaUri') || '';
+    }
+
     onDropzoneSending(file, xhr, formData) {
         formData.append('name', this.options.dotNotation);
         formData.append('admin-nonce', config.admin_nonce);
         formData.append('task', 'filesupload');
+        formData.append('uri', this.getURI());
     }
 
     onDropzoneSuccess(file, response, xhr) {
@@ -223,7 +231,7 @@ export default class FilesField {
         if (!file.accepted || file.rejected) { return; }
         let url = file.removeUrl || this.urls.delete;
         let path = (url || '').match(/path:(.*)\//);
-        let body = { filename: file.name };
+        let body = { filename: file.name, uri: this.getURI() };
 
         if (file.sessionParams) {
             body.task = 'filessessionremove';

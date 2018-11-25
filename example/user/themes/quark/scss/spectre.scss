@@ -23,7 +23,6 @@
 
 // Components
 @import "spectre/accordions";
-@import "spectre/autocomplete";
 @import "spectre/avatars";
 @import "spectre/badges";
 @import "spectre/breadcrumbs";
@@ -49,11 +48,4 @@
 @import "spectre/utilities";
 
 // Extras
-.search-input {
-  @extend .form-input;
-}
-
-.button {
-  @extend .btn;
-}
-
+@import "theme/extensions";

@@ -1,3 +1,56 @@
+# v2.8.0
+## 11/12/2018
+
+1. [](#new)
+    * Store remember me triplets into `user://data/rememberme` instead of storing them into the cache
+    * Ability to register + authorize but require accounts to be manually enabled [#180](https://github.com/getgrav/grav-plugin-login/issues/180)
+1. [](#improved)
+    * If login on registration or activation has been turned on, use login redirect if override is not set
+    * Don’t set default templates for `register` and `unauthorized`, use overridable templates [#179](https://github.com/getgrav/grav-plugin-login/issues/179)
+    * Updated `de.yaml` [#175](https://github.com/getgrav/grav-plugin-login/pull/175)
+    * Updated `ru.yaml` [#176](https://github.com/getgrav/grav-plugin-login/pull/176)
+1. [](#bugfix)
+    * Fixed broken remember me functionality
+    * Fixed client side validation in login forms
+    * Fix uppercase and Unicode username handling [#177](https://github.com/getgrav/grav-plugin-login/pull/177)
+
+# v2.7.3
+## 06/20/2018
+
+1. [](#bugfix)
+    * Fixed regression with `redirect_after_login` setting [#164](https://github.com/getgrav/grav-plugin-login/issues/164)
+
+# v2.7.2
+## 06/11/2018
+
+1. [](#new)
+    * Norwegian translation added [#163](https://github.com/getgrav/grav-plugin-login/issues/163)
+1. [](#bugfix)
+    * Fixed issue with `redirect_after_login` being ignored [#164](https://github.com/getgrav/grav-plugin-login/issues/164)
+    * CLI commands `change-user-state` and `change-password` were ignoring desired username [#161](https://github.com/getgrav/grav-plugin-login/issues/161)
+
+# v2.7.1
+## 06/03/2018
+
+1. [](#bugfix)
+    * Removed extra unnecessary username check [#159](https://github.com/getgrav/grav-plugin-login/issues/159)
+    * CLI command `add-user` ignores desired username [#157](https://github.com/getgrav/grav-plugin-login/issues/157)
+
+# v2.7.0
+## 05/11/2018
+
+1. [](#new)
+    * Moved support for 2FA authentication into Login plugin (only supported in Admin currently)
+    * Updated plugin dependencies (Grav >= 1.4.5, Form >=2.13.4, Email >=2.7.0)
+1. [](#improved)
+    * Added cleaner way for 3rd party providers to add twig templates to login form
+    * Use `Login` class validation methods in CLI
+    * Added logging of login exceptions
+    * Show denied message only when authenticated but not authorized
+1. [](#bugfix)
+    * Don't allow Profile saving if a Grav user account doesn't exist (OAuth/LDAP users for example)
+    * Don't allow PW reset if no current password exists (OAuth/LDAP users for example) 
+
 # v2.6.3
 ## 04/12/2018
 

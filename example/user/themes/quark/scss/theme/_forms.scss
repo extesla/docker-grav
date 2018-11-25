@@ -7,7 +7,7 @@ form {
   span.required {
     color: $error-color;
     font-weight: 700;
-    font-size: 150%;
+    font-size: 1.2rem;
   }
 
   .form-input[type=range] {
@@ -15,6 +15,34 @@ form {
     &:focus {
       box-shadow: none;
       border: none;
+    }
+  }
+}
+
+#grav-login {
+
+  > form {
+    margin: 2rem auto 0;
+    max-width: 350px;
+  }
+  .form-label {
+    display: none;
+  }
+  .form-data {
+    margin: 1rem 0;
+  }
+  .form-input {
+    text-align: center;
+  }
+  .button-wrapper {
+    text-align: right;
+
+    .form-data.rememberme {
+      margin: 0;
+      float: left;
+    }
+    button[type="submit"] {
+      @include button-primary;
     }
   }
 }
