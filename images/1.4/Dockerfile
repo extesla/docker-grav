@@ -60,8 +60,12 @@ RUN apk add --no-cache --virtual .build-deps \
     gd-dev \
     geoip-dev \
     gnupg \
+    imagemagick \
     imagemagick-dev \
+    imagemagick-libs \
     libc-dev \
+    libpng \
+    libpng-dev \
     libxslt-dev \
     libzip-dev \
     linux-headers \
@@ -77,6 +81,7 @@ RUN apk add --no-cache --virtual .build-deps \
  && sed -i 's/^\(\[include\]\)$/\1\nfiles = \/etc\/supervisor\/conf.d\/*.conf/' /etc/supervisord.conf \
  && mkdir -p /etc/supervisor/conf.d \
  && apk add --no-cache --upgrade --virtual .grav-deps acl git libzip
+ && docker-php-ext-install gd
 
 
 #: ==========================================================================
