@@ -57,30 +57,33 @@ RUN apk update && apk upgrade
 RUN apk add --no-cache --virtual .build-deps \
     curl \
     gcc \
-    gd-dev \
     geoip-dev \
     gnupg \
-    imagemagick \
-    imagemagick-dev \
-    imagemagick-libs \
     libc-dev \
-    libpng \
-    libpng-dev \
     libxslt-dev \
     libzip-dev \
     linux-headers \
     make \
     openssl-dev \
     pcre-dev \
-    zlib-dev \
     perl-dev \
+    zlib-dev \
  && apk add --no-cache --virtual .gettext gettext \
  && apk add --no-cache shadow supervisor \
  && sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisord.conf \
  && sed -i 's/^\(files = .*\)$/;\1/' /etc/supervisord.conf \
  && sed -i 's/^\(\[include\]\)$/\1\nfiles = \/etc\/supervisor\/conf.d\/*.conf/' /etc/supervisord.conf \
  && mkdir -p /etc/supervisor/conf.d \
- && apk add --no-cache --upgrade --virtual .grav-deps acl git libzip \
+ && apk add --no-cache --upgrade --virtual .grav-deps \
+    acl \
+    gd-dev \
+    git \
+    imagemagick \
+    imagemagick-dev \
+    imagemagick-libs \
+    libpng \
+    libpng-dev \
+    libzip \
  && docker-php-ext-install gd
 
 
