@@ -26,11 +26,11 @@ MAINTAINER Sean Quinn "sean.quinn@extesla.com"
 
 #: TODO: PHP Zip extension is not installed
 
-ENV GRAV_VERSION=1.5.6
-ENV NGINX_VERSION=1.15.6
-ENV NGINX_GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8
-ENV WWW_DIR=/srv/www
-ENV ENABLE_XDEBUG="false"
+ENV GRAV_VERSION=1.5.6 \
+    NGINX_VERSION=1.15.6 \
+    NGINX_GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+    WWW_DIR=/srv/www \
+    ENABLE_XDEBUG="false"
 
 WORKDIR /
 
@@ -53,8 +53,8 @@ WORKDIR /
 #:     $ mv /tmp/envsubst /usr/local/bin/
 #:     ```
 #:
-RUN apk update && apk upgrade
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk update && apk upgrade \
+ && apk add --no-cache --virtual .build-deps \
     curl \
     gcc \
     geoip-dev \
@@ -74,41 +74,31 @@ RUN apk add --no-cache --virtual .build-deps \
  && sed -i 's/^\(files = .*\)$/;\1/' /etc/supervisord.conf \
  && sed -i 's/^\(\[include\]\)$/\1\nfiles = \/etc\/supervisor\/conf.d\/*.conf/' /etc/supervisord.conf \
  && mkdir -p /etc/supervisor/conf.d \
- && apk add --no-cache --upgrade --virtual .grav-deps \
-    acl \
-    gd-dev \
-    git \
-    imagemagick \
-    imagemagick-dev \
-    imagemagick-libs \
-    libpng \
-    libpng-dev \
-    libzip \
- && docker-php-ext-install gd
+ && apk add --no-cache acl gd-dev git libzip
 
 
 #: ==========================================================================
 #: Install Extensions
 #: ==========================================================================
 
-#: Install GD
-COPY config/etc/php/mods-available/gd.ini /etc/php/mods-available/gd.ini
-RUN ln -s /etc/php/mods-available/gd.ini /etc/php/conf.d/20-gd.ini
-
-#: Imagick Client
-RUN pecl install imagick
+#: Install Imagemagick
 COPY config/etc/php/mods-available/imagick.ini /etc/php/mods-available/imagick.ini
-RUN ln -s /etc/php/mods-available/imagick.ini /etc/php/conf.d/20-imagick.ini
+RUN apk add --no-cache --virtual .imagemagick-deps \
+    imagemagick \
+    imagemagick-dev \
+    imagemagick-libs \
+ && pecl install imagick \
+ && ln -s /etc/php/mods-available/imagick.ini /etc/php/conf.d/20-imagick.ini
 
 #: Install XDebug
-RUN pecl install xdebug
 COPY config/etc/php/mods-available/xdebug.ini /etc/php/mods-available/xdebug.ini
-RUN ln -s /etc/php/mods-available/xdebug.ini /etc/php/conf.d/20-xdebug.ini
+RUN pecl install xdebug \
+ && ln -s /etc/php/mods-available/xdebug.ini /etc/php/conf.d/20-xdebug.ini
 
 #: Zip
-RUN pecl install zip
 COPY config/etc/php/mods-available/zip.ini /etc/php/mods-available/zip.ini
-RUN ln -s /etc/php/mods-available/zip.ini /etc/php/conf.d/10-zip.ini
+RUN pecl install zip \
+ && ln -s /etc/php/mods-available/zip.ini /etc/php/conf.d/10-zip.ini
 
 #: Configure PHP-FPM pools
 COPY config/etc/php/php-fpm.d/www.conf /etc/php/php-fpm.d/www.conf
@@ -267,7 +257,8 @@ RUN rm -rf /usr/src/nginx-$NGINX_VERSION \
  && apk del .build-deps \
  && mv /usr/bin/envsubst /tmp/ \
  && apk del .gettext \
- && mv /tmp/envsubst /usr/local/bin/
+ && mv /tmp/envsubst /usr/local/bin/ \
+ && rm -rf /var/cache/apk/*
 
 
 #: LOGGING
