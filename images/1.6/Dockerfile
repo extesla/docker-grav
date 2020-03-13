@@ -21,7 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-FROM extesla/php:7.4
+FROM extesla/php:7.3
 LABEL maintainer="Sean Quinn <sean.quinn@extesla.com>"
 
 #: TODO: PHP Zip extension is not installed
