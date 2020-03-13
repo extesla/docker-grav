@@ -276,7 +276,13 @@ COPY config/etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 
 RUN rm -rf /etc/nginx/conf.d/default.conf \
  && mkdir -p /var/lib/nginx \
- && chown -R www-data:www-data /var/lib/nginx
+ && chown -R www-data:www-data /var/lib/nginx \
+ && mkdir -p /var/cache/www \
+ && chown -R www-data:www-data /var/cache/www \
+ && mkdir -p /var/cache/nginx \
+ && chown -R www-data:www-data /var/cache/nginx \
+ && mkdir -p /var/log/www \
+ && chown -R www-data:www-data /var/log/www
 
 #: MODIFY SUPERVISOR CONFIGURATION
 #: ===============================
