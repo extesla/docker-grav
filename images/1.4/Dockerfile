@@ -144,8 +144,8 @@ RUN sed -i "s/^memory_limit = 128M$/memory_limit = 2048M/" /etc/php/php.ini \
 #:   We secure the `nginx` user by preventing logins. This is done by
 #:   directing logins to the `/sbin/nologin` shell.
 RUN set -x \
-    && addgroup -g 101 -S nginx \
-    && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
+ && addgroup -g 101 -S nginx \
+ && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
 
 RUN CONFIG="\
     --prefix=/etc/nginx \
