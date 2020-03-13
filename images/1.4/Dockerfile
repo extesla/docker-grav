@@ -87,6 +87,10 @@ RUN apk update && apk upgrade \
 #: Install Extensions
 #: ==========================================================================
 
+#: Install GD
+COPY config/etc/php/mods-available/gd.ini /etc/php/mods-available/gd.ini
+RUN docker-php-ext-install gd
+
 #: Install Imagemagick
 COPY config/etc/php/mods-available/imagick.ini /etc/php/mods-available/imagick.ini
 RUN apk add --no-cache --virtual .imagemagick-deps \
