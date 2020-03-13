@@ -21,14 +21,15 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-FROM extesla/php:7.2
-MAINTAINER Sean Quinn "sean.quinn@extesla.com"
+FROM extesla/php:7.4
+LABEL maintainer="Sean Quinn <sean.quinn@extesla.com>"
 
 #: TODO: PHP Zip extension is not installed
 
-ENV GRAV_VERSION=1.5.6 \
-    NGINX_VERSION=1.15.6 \
-    NGINX_GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+ENV GRAV_VERSION=1.5.10 \
+    NGINX_VERSION=1.17.9 \
+    NGINX_SHA512="e7fa8303923d9b95db37a77ad46c68fd4755ff935d0a534d26eba83de193c76166c68bfe7f65471bf8881004ef4aa6df3e34689c305662750c0172fca5d8552a *stdin" \
+    NJS_VERSION=0.3.9 \
     WWW_DIR=/srv/www \
     ENABLE_XDEBUG="false"
 
@@ -55,21 +56,26 @@ WORKDIR /
 #:
 RUN apk update && apk upgrade \
  && apk add --no-cache --virtual .build-deps \
+    ca-certificates \
     curl \
     gcc \
+    gd-dev \
     geoip-dev \
     gnupg \
     libc-dev \
-    libxslt-dev \
+    libressl \
+    libressl-dev \
+    libzip \
     libzip-dev \
+    libxslt-dev \
     linux-headers \
     make \
-    openssl-dev \
     pcre-dev \
-    perl-dev \
     zlib-dev \
+    perl-dev \
  && apk add --no-cache --virtual .gettext gettext \
- && apk add --no-cache shadow supervisor \
+ && apk add --no-cache supervisor \
+ && mkdir -p /etc/supervisor/conf.d \
  && sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisord.conf \
  && sed -i 's/^\(files = .*\)$/;\1/' /etc/supervisord.conf \
  && sed -i 's/^\(\[include\]\)$/\1\nfiles = \/etc\/supervisor\/conf.d\/*.conf/' /etc/supervisord.conf \
@@ -84,21 +90,18 @@ RUN apk update && apk upgrade \
 #: Install Imagemagick
 COPY config/etc/php/mods-available/imagick.ini /etc/php/mods-available/imagick.ini
 RUN apk add --no-cache --virtual .imagemagick-deps \
-    imagemagick \
-    imagemagick-dev \
-    imagemagick-libs \
+    freetype-dev libpng-dev libjpeg-turbo-dev imagemagick-dev imagemagick \
  && pecl install imagick \
- && ln -s /etc/php/mods-available/imagick.ini /etc/php/conf.d/20-imagick.ini
+ && docker-php-ext-enable imagick
 
 #: Install XDebug
 COPY config/etc/php/mods-available/xdebug.ini /etc/php/mods-available/xdebug.ini
 RUN pecl install xdebug \
- && ln -s /etc/php/mods-available/xdebug.ini /etc/php/conf.d/20-xdebug.ini
+ && docker-php-ext-enable xdebug
 
 #: Zip
 COPY config/etc/php/mods-available/zip.ini /etc/php/mods-available/zip.ini
-RUN pecl install zip \
- && ln -s /etc/php/mods-available/zip.ini /etc/php/conf.d/10-zip.ini
+RUN docker-php-ext-install zip
 
 #: Configure PHP-FPM pools
 COPY config/etc/php/php-fpm.d/www.conf /etc/php/php-fpm.d/www.conf
@@ -137,9 +140,8 @@ RUN sed -i "s/^memory_limit = 128M$/memory_limit = 2048M/" /etc/php/php.ini \
 #:   We secure the `nginx` user by preventing logins. This is done by
 #:   directing logins to the `/sbin/nologin` shell.
 RUN set -x \
-    && addgroup -S nginx \
-    && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx
-
+ && addgroup -g 101 -S nginx \
+ && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
 
 RUN CONFIG="\
     --prefix=/etc/nginx \
@@ -188,17 +190,12 @@ RUN CONFIG="\
     --with-file-aio \
     --with-http_v2_module \
     " \
- && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
- && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
+ && wget -O nginx.tar.gz http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz \
+ && wget -O nginx.tar.gz.asc http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc \
  && mkdir -p /tmp/gnupg \
  && export GNUPGHOME="$(mktemp -d -p /tmp/gnupg)" \
- && for key in $NGINX_GPG_KEYS; do \
-      gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
-      gpg --keyserver keyserver.pgp.com --recv-keys "$key" || \
-      gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" ; \
-    done \
- && gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
- && rm -rf "/tmp/gnupg" "nginx.tar.gz.asc" \
+ # TODO: Add key signing
+ && rm -rf "$GNUPGHOME" nginx.tar.gz.asc \
  && mkdir -p /usr/src \
  && tar -zxC /usr/src -f nginx.tar.gz \
  && rm nginx.tar.gz \
@@ -257,8 +254,7 @@ RUN rm -rf /usr/src/nginx-$NGINX_VERSION \
  && apk del .build-deps \
  && mv /usr/bin/envsubst /tmp/ \
  && apk del .gettext \
- && mv /tmp/envsubst /usr/local/bin/ \
- && rm -rf /var/cache/apk/*
+ && mv /tmp/envsubst /usr/local/bin/
 
 
 #: LOGGING
@@ -340,6 +336,8 @@ EXPOSE 80 443
 #: DOCKER ENTRYPOINT
 COPY docker-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+STOPSIGNAL SIGTERM
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["-c", "/etc/supervisord.conf"]
